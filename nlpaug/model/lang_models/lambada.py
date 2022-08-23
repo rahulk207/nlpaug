@@ -4,7 +4,7 @@ import os
 try:
 	import torch
 	import torch.nn as nn
-	from transformers import GPT2LMHeadModel, GPT2Tokenizer
+	from transformers import AutoModelForCausalLM, AutoTokenizer
 	from simpletransformers.classification import ClassificationModel
 except ImportError:
 	# No installation required if not using this function
@@ -18,14 +18,6 @@ class Lambada(LanguageModels):
 	def __init__(self, cls_model_dir, gen_model_dir, threshold=0.7, min_length=100, max_length=300, 
 		batch_size=32, temperature=1.0, top_k=50, top_p=0.9, repetition_penalty=1.0, device='cuda'):
 		super().__init__(device, model_type=None)
-		try:
-			from transformers import GPT2LMHeadModel
-		except ModuleNotFoundError:
-			raise ModuleNotFoundError('Missed transformers library. Install transfomers by `pip install transformers`')
-		try:
-			from simpletransformers.classification import ClassificationModel
-		except ModuleNotFoundError:
-			raise ModuleNotFoundError('Missed simpletransformers library. Install transfomers by `pip install simpletransformers`')
 
 		self.cls_model_dir = cls_model_dir
 		self.gen_model_dir = gen_model_dir
@@ -48,9 +40,9 @@ class Lambada(LanguageModels):
 			cls_config = json.load(f)
 		self.cls_model = ClassificationModel(cls_config['model_type'], cls_model_dir, use_cuda=device != 'cpu', 
 			args={'silent':True})
-		self.gen_model = GPT2LMHeadModel.from_pretrained(gen_model_dir)
+		self.gen_model = AutoModelForCausalLM.from_pretrained(gen_model_dir)
 		self.gen_model.eval()
-		self.gen_tokenizer = GPT2Tokenizer.from_pretrained(gen_model_dir)
+		self.gen_tokenizer = AutoTokenizer.from_pretrained(gen_model_dir)
 		self.to_device()
 
 	def to_device(self):
