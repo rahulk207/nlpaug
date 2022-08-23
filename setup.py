@@ -27,5 +27,5 @@ setup(
         "deep learning", "neural network", "machine learning",
         "nlp", "natural language processing", "text", "audio", "spectrogram",
         "augmentation", "adversarial attack", "ai", "ml"],
-    python_requires=">=3.7"
+    python_requires=">=3.6"
 )
