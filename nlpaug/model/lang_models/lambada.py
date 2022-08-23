@@ -133,6 +133,7 @@ class Lambada(LanguageModels):
 
 	def predict(self, texts, target_words=None, n=10):
 		generated_texts = self._generate(texts, n)
+		print(generated_texts)
 		generated_texts = self._classify(generated_texts)
 		if self.threshold:
 			return self._filter(generated_texts)
