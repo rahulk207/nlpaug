@@ -126,7 +126,7 @@ class Lambada(LanguageModels):
 	def predict(self, texts, target_words=None, n=10):
 		generated_texts = self._generate(texts, n)
 		generated_texts = self._classify(generated_texts)
-		print(generated_texts); generated_texts.to_csv("~/Desktop/gen_test.csv", sep='||')		
+		print(generated_texts); generated_texts.to_csv("~/gen_test.csv", sep='||')		
 		if self.threshold:
 			return self._filter(generated_texts)
 		return generated_texts
