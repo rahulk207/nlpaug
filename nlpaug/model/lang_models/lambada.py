@@ -16,7 +16,7 @@ from nlpaug.model.lang_models import LanguageModels
 class Lambada(LanguageModels):
 	#https://arxiv.org/pdf/1911.03118.pdf
 	def __init__(self, cls_model_dir, gen_model_dir, threshold=0.7, min_length=100, max_length=300, 
-		batch_size=32, temperature=1.0, top_k=50, top_p=0.9, repetition_penalty=1.0, device='cuda'):
+		batch_size=32, temperature=1.0, top_k=50, top_p=0.9, repetition_penalty=1.0, device='cuda', stop_tokens=['<|endoftext|>']):
 		super().__init__(device, model_type=None)
 
 		self.cls_model_dir = cls_model_dir
@@ -29,8 +29,8 @@ class Lambada(LanguageModels):
 		self.top_k = top_k
 		self.top_p = top_p
 		self.repetition_penalty = repetition_penalty
-		self.sep_token = '[SEP]'
-		self.stop_token = '<|endoftext|>'
+		self.stop_tokens = stop_tokens
+		self.sep_token = '[SEP]'		
 
 		with open(os.path.join(cls_model_dir, 'label_encoder.json')) as f:
 			self.label2id = json.load(f)
@@ -92,7 +92,8 @@ class Lambada(LanguageModels):
 					# Remove all text before label
 					generated_text = generated_text[len(input_text):]
 					# Remove all text after the stop token
-					generated_text = generated_text[:generated_text.find(self.stop_token) if self.stop_token else None]
+					stop_index = min([generated_text.find(stop_tok) for stop_tok in self.stop_tokens]) if self.stop_tokens else None
+					generated_text = generated_text[:stop_index]
 					# Replace sep_token by ' '
 					generated_text = generated_text.replace(self.sep_token, ' ')
 
