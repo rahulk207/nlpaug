@@ -100,6 +100,6 @@ class LambadaAug(SentenceAugmenter):
 
     @classmethod
     def get_model(cls, model_dir, threshold, min_length, max_length, batch_size, 
-        temperature, top_k, top_p, repetition_penalty, device='cuda', force_reload=False, stop_tokens):
+        temperature, top_k, top_p, repetition_penalty, device='cuda', force_reload=False, stop_tokens=['<|endoftext|>']):
         return init_lambada_model(model_dir, threshold, min_length, max_length, batch_size, 
             temperature, top_k, top_p, repetition_penalty, device, force_reload, stop_tokens)
