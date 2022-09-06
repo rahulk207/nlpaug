@@ -12,7 +12,7 @@ from nlpaug.util import Action, Doc
 LAMBADA_MODELS = {}
 
 def init_lambada_model(model_dir, threshold, min_length, max_length, batch_size, 
-    temperature, top_k, top_p, repetition_penalty, device, force_reload):
+    temperature, top_k, top_p, repetition_penalty, device, force_reload, stop_tokens):
     global LAMBADA_MODELS
 
     model_name = '_'.join([os.path.basename(model_dir), str(device)])
@@ -31,7 +31,7 @@ def init_lambada_model(model_dir, threshold, min_length, max_length, batch_size,
         cls_model_dir=os.path.join(model_dir, 'cls'), gen_model_dir=os.path.join(model_dir, 'gen'), 
         threshold=threshold, max_length=max_length, min_length=min_length, temperature=temperature, 
         top_k=top_k, top_p=top_p, repetition_penalty=repetition_penalty, batch_size=batch_size,
-        device=device)
+        device=device, stop_tokens=stop_tokens)
 
     LAMBADA_MODELS[model_name] = model
     return model
@@ -65,7 +65,7 @@ class LambadaAug(SentenceAugmenter):
 
     def __init__(self, model_dir, threshold=None, min_length=100, max_length=300, 
         batch_size=16, temperature=1.0, top_k=50, top_p=0.9, repetition_penalty=1.0,
-        name='Lambada_Aug', device='cpu', force_reload=False, verbose=0):
+        name='Lambada_Aug', device='cpu', force_reload=False, verbose=0, stop_tokens=['<|endoftext|>']):
         super().__init__(
             action=Action.INSERT, name=name, tokenizer=None, stopwords=None, device=device,
             include_detail=False, verbose=verbose)
@@ -78,7 +78,7 @@ class LambadaAug(SentenceAugmenter):
         self.model = self.get_model(
             model_dir=model_dir, threshold=threshold, max_length=max_length, min_length=min_length, 
             temperature=temperature, top_k=top_k, top_p=top_p, repetition_penalty=repetition_penalty, 
-            batch_size=batch_size, device=device, force_reload=force_reload)
+            batch_size=batch_size, device=device, force_reload=force_reload, stop_tokens=stop_tokens)
         self.device = self.model.get_device()
 
     def insert(self, data, n=10):
@@ -100,6 +100,6 @@ class LambadaAug(SentenceAugmenter):
 
     @classmethod
     def get_model(cls, model_dir, threshold, min_length, max_length, batch_size, 
-        temperature, top_k, top_p, repetition_penalty, device='cuda', force_reload=False):
+        temperature, top_k, top_p, repetition_penalty, device='cuda', force_reload=False, stop_tokens):
         return init_lambada_model(model_dir, threshold, min_length, max_length, batch_size, 
-            temperature, top_k, top_p, repetition_penalty, device, force_reload)
+            temperature, top_k, top_p, repetition_penalty, device, force_reload, stop_tokens)
